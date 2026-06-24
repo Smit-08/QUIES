@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String      @id @default(uuid())
+  firebase_uid String      @unique
+  email        String
+  created_at   DateTime    @default(now())
+  devices      Device[]
+  evidence     Evidence[]
+  risk_scores  RiskScore[]
+  jobs         Job[]
+}
+
+model Device {
+  id              String    @id @default(uuid())
+  user_id         String
+  user            User      @relation(fields: [user_id], references: [id])
+  scan_results    Json?
+  last_scanned_at DateTime?
+}
+
+model Job {
+  id           String    @id @default(uuid())
+  user_id      String
+  user         User      @relation(fields: [user_id], references: [id])
+  type         String
+  status       String    @default("queued")
+  input        Json?
+  result       Json?
+  error        Json?
+  created_at   DateTime  @default(now())
+  completed_at DateTime?
+}
+
+model Evidence {
+  id               String   @id @default(uuid())
+  user_id          String
+  user             User     @relation(fields: [user_id], references: [id])
+  type             String
+  file_ref         String
+  hash             String
+  blockchain_tx_id String?
+  created_at       DateTime @default(now())
+}
+
+model RiskScore {
+  id         String   @id @default(uuid())
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id])
+  score      Int
+  factors    Json
+  created_at DateTime @default(now())
+}
