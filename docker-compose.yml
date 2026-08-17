@@ -6,7 +6,8 @@ services:
       - "3000:3000"
     env_file: ./backend/.env
     depends_on:
-      - db
+      db:
+        condition: service_healthy   # wait until Postgres is actually accepting connections
 
   ai-service:
     build: ./ai-service
@@ -21,4 +22,14 @@ services:
       POSTGRES_PASSWORD: quies
       POSTGRES_DB: quies
     ports:
-      - "5432:5432"
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quies -d quies"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data   # persist data across docker-compose down/up
+
+volumes:
+  postgres_data:
