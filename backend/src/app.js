@@ -13,6 +13,8 @@ const evidenceRoutes = require('./routes/evidence');
 const chatRoutes     = require('./routes/chat');
 const reportRoutes   = require('./routes/report');
 
+const rateLimit = require('express-rate-limit');
+
 // Error helpers
 const { AppError } = require('./services/errors');
 
@@ -30,6 +32,19 @@ app.use(cors());
 app.get('/health', (_req, res) => {
   res.json({ success: true, data: { status: 'ok' } });
 });
+
+// ─── Rate limiting (100 requests per 15 minutes per IP) ─────────────────────
+// Returns contract-compliant 429 RATE_LIMITED error envelope via central error handler
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (_req, _res, next) => {
+    next(new AppError('RATE_LIMITED', 'Too many requests, please try again later.'));
+  },
+});
+app.use(limiter);
 
 // ─── API Routes ───────────────────────────────────────────────────────────────
 app.use('/api/auth',     authRoutes);

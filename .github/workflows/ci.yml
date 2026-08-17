@@ -15,7 +15,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 20
-      - run: echo "npm install and lint/test commands go here"
+      - run: npm ci
+      - run: npm test
 
   ai-service:
     runs-on: ubuntu-latest

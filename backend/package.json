@@ -9,7 +9,8 @@
     "migrate": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy",
     "generate": "prisma generate",
-    "studio": "prisma studio"
+    "studio": "prisma studio",
+    "test": "jest"
   },
   "dependencies": {
     "@prisma/client": "^5.14.0",
@@ -21,7 +22,9 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "prisma": "^5.14.0"
+    "jest": "^30.4.2",
+    "prisma": "^5.14.0",
+    "supertest": "^7.2.2"
   },
   "engines": {
     "node": ">=20.0.0"
